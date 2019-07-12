@@ -1,6 +1,5 @@
 const
-    SpiderKhan = require("../../src/SpiderKhan"),
-    Path = require("path");
+    SpiderKhan = require("../../src/SpiderKhan");
 
 class App {
 
@@ -11,7 +10,7 @@ class App {
             port: "8089",
             rootPath : "/service",
             defaultResponseHeaders : {
-
+                "my-header" : "33232323"
             }
         });
 

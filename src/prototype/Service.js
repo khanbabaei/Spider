@@ -13,7 +13,6 @@ class Service {
 
     async _onRequest() {
 
-        let methods = this._class.SpiderKhan.method;
         let ret;
         let method = this._request.method;
 
@@ -28,8 +27,6 @@ class Service {
         } else {
             ret = await this.onRequest();
         }
-
-
 
         return ret;
     }

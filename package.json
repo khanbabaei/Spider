@@ -1,7 +1,7 @@
 {
   "name": "spiderkhan",
   "description": "API SERVICE FRAMEWORK",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "ali khanbabaei <khanbabaeiOfficial@gmail.com>",
   "contributors": [
     "ali khanbabaei <khanbabaeiOfficial@gmail.com>"
@@ -19,6 +19,7 @@
     "app",
     "api"
   ],
+  "main": "./src/SpiderKhan.js",
   "dependencies": {
     "glob": "*",
     "formidable": "*"

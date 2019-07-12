@@ -1,6 +1,7 @@
 const
     Glob = require("glob"),
-    Formidable = require('formidable');
+    Formidable = require('formidable'),
+    URL = require("url");
 
 
 class ApiHandler{
@@ -10,6 +11,7 @@ class ApiHandler{
         this._defaultResponseHeaders = options.defaultResponseHeaders;
         this._services = {};
         this._middlewares = [];
+        this._uploadDir = options.uploadDir;
 
         this._defaultRoutClass = null;
 
@@ -117,20 +119,18 @@ class ApiHandler{
         }
     }
 
-    _response({body,headers,statusCode=200}){
+    _response(res,{body,headers,statusCode=200}){
 
         let resHead;
 
         if (headers) {
             resHead = headers;
-        } else if (this._class.SpiderKhan.responseHeaders) {
-            resHead = this._class.SpiderKhan.responseHeaders;
         } else {
             resHead = {};
         }
-        this._response.writeHead(statusCode, resHead);
+        res.writeHead(statusCode, resHead);
 
-        this._response.end(body);
+        res.end(body);
 
     }
 
@@ -147,9 +147,7 @@ class ApiHandler{
             let urlData = URL.parse(req.url,true);
 
             let className = this.getClass(urlData.pathname);
-
             let body = await this._getRequestBodyData(req);
-
             for (let i = 0; i < this._middlewares.length; i++) {
                 let middleware = this._middlewares[i];
 
@@ -165,6 +163,7 @@ class ApiHandler{
                 }
             }
 
+            let result;
 
             if (className) {
                 let params = {
@@ -176,19 +175,44 @@ class ApiHandler{
                 };
                 let cls = new className(params);
 
-                let res = await cls.onRequest();
+                result = await cls._onRequest();
 
 
-                if (res && typeof res === "object") {
+                if (result && typeof result === "object") {
 
+                    if (!result.statusCode) {
+                        result.statusCode = 200;
+                    }
+
+                    if (!result.headers) {
+
+                        let mtd = className.SpiderKhan.method && className.SpiderKhan.method[req.method];
+                        if (mtd.headers) {
+                            result.headers = mtd.headers;
+                        } else if (className.SpiderKhan.defaultResponseHeaders) {
+                            result.headers = className.SpiderKhan.defaultResponseHeaders;
+                        }
+                    }
+
+                } else {
+                    result = {
+                        statusCode : 500
+                    }
+                }
+            } else {
+                result = {
+                    statusCode : 500
                 }
             }
+
+            this._response(res,result);
 
 
 
 
         }catch (e){
 
+            console.log(e);
         }
     }
 

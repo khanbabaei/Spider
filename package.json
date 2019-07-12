@@ -1,0 +1,37 @@
+{
+  "name": "spiderkhan",
+  "description": "API SERVICE FRAMEWORK",
+  "version": "1.0.0",
+  "author": "ali khanbabaei <khanbabaeiOfficial@gmail.com>",
+  "contributors": [
+    "ali khanbabaei <khanbabaeiOfficial@gmail.com>"
+  ],
+  "license": "MIT",
+  "repository": "khanbabaei/SpiderKhan",
+  "homepage": "",
+  "keywords": [
+    "spider",
+    "framework",
+    "web",
+    "rest",
+    "restful",
+    "router",
+    "app",
+    "api"
+  ],
+  "dependencies": {
+    "glob": "*",
+    "formidable": "*"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "src/",
+    "samples/"
+  ],
+  "scripts": {}
+}

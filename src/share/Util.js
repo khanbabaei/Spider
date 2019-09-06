@@ -98,6 +98,18 @@ class Util{
         });
 
     }
+
+    static traverseDir(dir) {
+        FS.readdirSync(dir).forEach(file => {
+            let fullPath = path.join(dir, file);
+            if (FS.lstatSync(fullPath).isDirectory()) {
+                console.log(fullPath);
+                traverseDir(fullPath);
+            } else {
+                console.log(fullPath);
+            }
+        });
+    }
 }
 
 

@@ -1,10 +1,11 @@
 const
     Glob = require("glob"),
     Formidable = require('formidable'),
+    Chokidar = require('chokidar'),
     URL = require("url");
 
 
-class ApiHandler{
+class APIHandler{
 
     constructor(options) {
 
@@ -15,29 +16,56 @@ class ApiHandler{
 
         this._defaultRoutClass = null;
 
+        let dir = process.cwd() + options.rootPath +"/**/*.js";
 
-        let classes = Glob.sync( process.cwd() + options.rootPath + "/**/*.js");
+        Chokidar
+            .watch(dir, {
+                ignoreInitial: true,
+            })
+            .on('add', (path) => {this._addService(path)})
+            .on('change', (path) => {this._addService(path)})
+            .on('unlink', (path) => {this._removeService({path:path})})
+        ;
+
+        let classes = Glob.sync(dir);
 
         for (let i = 0; i < classes.length; i++) {
-            let cls = require(classes[i]);
+            this._addService(classes[i]);
 
-            let spiderKhan = cls.SpiderKhan;
+        }
+    }
 
-            if(typeof spiderKhan === "object" && spiderKhan !== null) {
-                // if(this._services[service.url]) {
-                //     throw new Exception(0,"DUPLICATE SERVICE "+ service.url )
-                // }
+    _addService(path){
 
-                this._services[spiderKhan.url] = {
-                    class: cls,
-                    method : spiderKhan.method
-                };
+        delete require.cache[path];
 
-                if (spiderKhan.defaultRout) {
-                    this._defaultRoutClass = cls;
-                }
+        let cls = require(path);
+
+        let spiderKhan = cls.SpiderKhan;
+
+        if(typeof spiderKhan === "object" && spiderKhan !== null) {
+            // if(this._services[service.url]) {
+            //     throw new Exception(0,"DUPLICATE SERVICE "+ service.url )
+            // }
+            this._services[spiderKhan.url] = {
+                class: cls,
+                method : spiderKhan.method,
+                path : path
+            };
+
+            if (spiderKhan.defaultRout) {
+                this._defaultRoutClass = cls;
             }
+        }
+    }
 
+    _removeService({path,url}){
+
+        for (let srvUrl in this._services) {
+
+            if ((path && this._services[srvUrl].path === path) || url === srvUrl) {
+                delete this._services[srvUrl];
+            }
         }
     }
 
@@ -57,7 +85,7 @@ class ApiHandler{
     _parseForm(request){
         return new Promise((resolve, reject) => {
             let form = new Formidable.IncomingForm();
-            form.uploadDir = "./tmp";
+            form.uploadDir = this._uploadDir;
             // form.multiples = true;
             let fieldsData ={};
             form.parse(request, async(err, fields, files)=> {
@@ -223,4 +251,4 @@ class ApiHandler{
     }
 }
 
-module.exports = ApiHandler;
+module.exports = APIHandler;

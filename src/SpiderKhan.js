@@ -1,6 +1,6 @@
 const
     HttpHandler = require("./network/HttpHandler"),
-    ApiHandler = require("./service/ApiHandler"),
+    ApiHandler = require("./service/APIHandler"),
     FS = require("fs");
 
 class SpiderKhan{

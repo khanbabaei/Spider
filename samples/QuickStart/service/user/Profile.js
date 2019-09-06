@@ -2,16 +2,16 @@ const
     Service = require("../../../../src/prototype/Service");
 
 
+
 class Profile extends Service{
 
     async onPost(req,res){
 
         return  {
-            body : "{TEST : 33333}",
+            body : "{TEST : 22222222222}",
             headers : "application/json",
             statusCode : 405
         }
-
     }
 
 }
